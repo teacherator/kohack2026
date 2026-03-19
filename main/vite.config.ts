@@ -11,6 +11,7 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: process.env.PORT ? parseInt(process.env.PORT) : 8080,
+    allowedHosts: ['lionfish-app-5f4rk.ondigitalocean.app', 'kohack2026.ramaztec.org'],
   },
   test: {
     globals: true,
