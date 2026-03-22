@@ -1,46 +1,99 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom';
 
 export default function App() {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-slate-100">
-      <header className="border-b border-slate-800">
-        <div className="mx-auto flex max-w-5xl items-center justify-between p-4">
-          <h1 className="text-lg font-semibold tracking-tight">Vite React TS Starter</h1>
-          <nav className="flex gap-3">
-            <NavLink
-              to="/"
-              end
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-indigo-400 font-medium'
-                  : 'text-slate-200 hover:text-white'
-              }
-            >
-              Home
-            </NavLink>
-            <NavLink
-              to="/about"
-              className={({ isActive }) =>
-                isActive
-                  ? 'text-indigo-400 font-medium'
-                  : 'text-slate-200 hover:text-white'
-              }
-            >
-              About
-            </NavLink>
-          </nav>
-        </div>
-      </header>
+  // For demo — in real app, get this from auth context / state
+  const isLoggedIn = false; // ← change to true to test logged-in state
 
-      <main className="mx-auto max-w-5xl p-4">
+  return (
+    <div className="min-h-screen bg-white text-gray-900">
+      <nav className="border-b p-4 flex items-center justify-between">
+  {/* Left side - Navigation links */}
+  <div className="flex gap-8 items-center">  {/* increased gap a bit for breathing room */}
+    <NavLink
+      to="/"
+      end
+      className={({ isActive }) =>
+        isActive
+          ? "text-blue-700 font-bold"
+          : "text-blue-600 hover:underline font-medium"
+      }
+    >
+      Home
+    </NavLink>
+
+    {/* Dropdown - Learning Schedules */}
+    <div className="relative group">
+      <button
+        type="button"
+        className="flex items-center gap-1 text-blue-600 hover:underline font-medium focus:outline-none"
+      >
+        Learning Schedules
+        <svg
+          className="w-4 h-4 transition-transform group-hover:rotate-180"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {/* Dropdown menu - no mt- gap, immediate appearance, padding inside */}
+      <div className="absolute left-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-150 z-10">
+        <NavLink
+          to="/mishnah-yomi"
+          className={({ isActive }) =>
+            isActive
+              ? "block px-4 py-2.5 text-blue-700 font-medium bg-blue-50"
+              : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700"
+          }
+        >
+          Mishnah Yomi
+        </NavLink>
+      </div>
+    </div>
+
+    <NavLink
+      to="/settings"
+      className={({ isActive }) =>
+        isActive
+          ? "text-blue-700 font-bold"
+          : "text-blue-600 hover:underline font-medium"
+      }
+    >
+      User Settings
+    </NavLink>
+
+    <NavLink
+      to="/about"
+      className={({ isActive }) =>
+        isActive
+          ? "text-blue-700 font-bold"
+          : "text-blue-600 hover:underline font-medium"
+      }
+    >
+      About
+    </NavLink>
+  </div>
+
+  {/* Right side - Auth status (unchanged) */}
+  <div className="flex items-center gap-2 text-sm font-medium">
+    {isLoggedIn ? (
+      <span className="text-green-600">Logged In</span>
+    ) : (
+      <span className="text-gray-500">Guest</span>
+    )}
+  </div>
+</nav>
+
+      <main className="p-6">
         <Outlet />
       </main>
-
-      <footer className="border-t border-slate-800">
-        <div className="mx-auto max-w-5xl p-4 text-xs text-slate-500">
-          Built with Vite, React, TypeScript, Tailwind, Zustand & Vitest.
-        </div>
-      </footer>
     </div>
-  )
+  );
 }
