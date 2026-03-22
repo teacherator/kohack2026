@@ -1,3 +1,9 @@
+/* Requests Layer (the other three files use this to send requests)
+
+
+apiFetch(endpoint, options)
+*/
+
 const API_BASE =
   "https://fastapi-template-app-entxr.ondigitalocean.app";
 

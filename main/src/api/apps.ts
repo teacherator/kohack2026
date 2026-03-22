@@ -1,3 +1,13 @@
+/* App Management Layer
+
+
+Developer-level backend features
+
+Example: 
+
+await createApp("myapp", adminPassword)
+*/
+
 import { apiFetch } from "./client";
 
 export async function createApp(

@@ -1,3 +1,11 @@
+/* Login/logout session layer
+
+Examples
+login(email, password)
+logout()
+getCurrentUser()
+*/
+
 import { apiFetch } from "./client";
 
 export async function login(email: string, password: string) {
