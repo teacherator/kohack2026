@@ -7,6 +7,7 @@ from googletrans import Translator
 from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data, save_outputs
 from Sentence_Simplify import main as simplify_text
 from STC.stc import STC
+import threading
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
@@ -133,8 +134,14 @@ def simplify_text_endpoint():
 @app.route('/api/stc', methods=['POST'])
 def start_stc():
     try:
-        STC()
-        return jsonify({"message": "STC started successfully!"})
+        def after_process(transcript, command):
+            print(f"[ROUTE] Processed: {transcript} -> {command}")
+
+        thread = threading.Thread(target=STC, kwargs={"on_processed": after_process})
+        thread.daemon = True
+        thread.start()
+
+        return jsonify({"message": "STC started in background!"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
