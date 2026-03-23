@@ -3,9 +3,9 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type SettingsState = {
-  contrast: number;     // 0–200%
-  fontSize: number;     // Percentage out of 100
-  lineHeight: number;   // Between 1-2
+  contrast: number;
+  fontSize: number;
+  lineHeight: number;
   setContrast: (value: number) => void;
   setFontSize: (value: number) => void;
   setLineHeight: (value: number) => void;
