@@ -4,7 +4,7 @@ from email_service import send_update
 from main import tts
 import os
 import json
-# from googletrans import Translator
+from googletrans import Translator
 from eleven import get_daily_mishnah_hebrew 
 from eleven import generate_tts_with_timestamps
 from truman import main as simplify_text
