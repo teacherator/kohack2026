@@ -14,4 +14,11 @@
   a {
     @apply text-indigo-200 hover:text-white;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
 }

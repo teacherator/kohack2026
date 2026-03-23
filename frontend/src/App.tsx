@@ -11,14 +11,17 @@ export default function App() {
   const contrast = useSettingsStore((s) => s.contrast);
   const fontSize = useSettingsStore((s) => s.fontSize);
   const lineHeight = useSettingsStore((s) => s.lineHeight);
+  const reducedMotion = useSettingsStore((s) => s.reducedMotion);
+  const dyslexiaFont = useSettingsStore((s) => s.dyslexiaFont);
 
   return (
     <div
-      className="min-h-screen bg-white text-gray-900"
+      className={`min-h-screen bg-white text-gray-900 ${dyslexiaFont ? "font-dyslexia" : ""}`}
       style={{
-        filter: `contrast(${contrast}%)`,  // global contrast
-        fontSize: `${fontSize}%`,           // global font size
-        lineHeight: lineHeight,             // global line spacing
+        filter: `contrast(${contrast}%)`,
+        fontSize: `${fontSize}%`,
+        lineHeight: lineHeight,
+        transition: reducedMotion ? "none" : "all 0.3s ease",
       }}
     >
       {/* Navbar */}
