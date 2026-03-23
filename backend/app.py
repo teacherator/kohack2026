@@ -1,6 +1,6 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
-from email import send_update
+from email_service import send_update
 from main import tts
 import os
 
