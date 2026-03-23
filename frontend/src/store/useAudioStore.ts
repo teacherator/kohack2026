@@ -25,26 +25,47 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   setAudio: (audio) => set({ audio }),
 
   setSrc: (src) => {
+    const oldAudio = get().audio; //Loading new audio and stopping old audio
+    if (oldAudio) oldAudio.pause();
+
     const audio = new Audio(src);
 
     audio.ontimeupdate = () =>
       set({ currentTime: audio.currentTime });
 
+    audio.onerror = (e) => {
+      // log loading errors for debugging
+      // eslint-disable-next-line no-console
+      console.error('Audio failed to load', audio.src, e);
+    };
+
     audio.onloadedmetadata = () =>
       set({ duration: audio.duration });
 
-    set({ audio, src, isPlaying: false });
+    audio.onended = () =>
+      set({ isPlaying: false });
+
+    set({ audio, src, isPlaying: false, currentTime: 0 });
   },
 
   play: () => {
     const audio = get().audio;
     if (!audio) return;
 
-    audio.play();
-    set({ isPlaying: true });
+    // Play returns a promise which can reject (autoplay/CORS/404). handle it.
+    const p = audio.play();
+    if (p && typeof p.then === 'function') {
+      p.then(() => set({ isPlaying: true })).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error('Audio play failed', err);
+        set({ isPlaying: false });
+      });
+    } else {
+      set({ isPlaying: true });
+    }
   },
 
-  pause: () => {
+  pause: () => { //Pausing the audio
     const audio = get().audio;
     if (!audio) return;
 
@@ -52,7 +73,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({ isPlaying: false });
   },
 
-  setTime: (time) => {
+  setTime: (time) => { //Current time variable
     const audio = get().audio;
     if (!audio) return;
 

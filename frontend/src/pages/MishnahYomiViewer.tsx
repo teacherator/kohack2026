@@ -1,5 +1,7 @@
+// src/pages/MishnahYomiViewer.tsx
 import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useAudioStore } from '../store/useAudioStore';
 
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
@@ -9,18 +11,18 @@ export default function MishnahYomiViewer() {
   const [error, setError] = useState<string>('');
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
+  const setAudioSrc = useAudioStore((s) => s.setSrc);
 
-  const API_BASE = import.meta.env.DEV 
-    ? 'http://localhost:5000' 
-    : 'https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi';
-
+  // Load Hebrew text
   useEffect(() => {
+    const API_BASE = import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app';
+
     const fetchHebrewText = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/hebrew-text`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch Hebrew text');
-        }
+        if (!response.ok) throw new Error('Failed to fetch Hebrew text');
         const data = await response.json();
         setHebrewText(data.hebrew_text);
         setHebrewSegments(data.hebrew_segments || []);
@@ -33,6 +35,35 @@ export default function MishnahYomiViewer() {
     };
 
     fetchHebrewText();
+  }, []); //Linter is happy? API_BASE is inside effect
+
+  // Load the audio file when this page mounts
+  useEffect(() => {
+    // Try backend audio endpoint first (dev server), fall back to public path
+    const API_BASE = import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
+
+    (async () => {
+      try {
+        const tryPaths = [`${API_BASE}/audio/mishnah.mp3`, `${API_BASE}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
+        for (const p of tryPaths) {
+          try {
+            const resp = await fetch(p, { method: 'HEAD' });
+            if (resp.ok) {
+              setAudioSrc(p);
+              return;
+            }
+          } catch (e) {
+            // ignore and try next
+          }
+        }
+        // fallback to original suggestion if none found
+        setAudioSrc('/audio/mishnah.mp3');
+      } catch (err) {
+        setAudioSrc('/audio/mishnah.mp3');
+      }
+    })();
   }, []);
 
   const parseVerses = (ref: string): string[] => {
