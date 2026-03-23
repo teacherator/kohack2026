@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-      dyslexia: ['"Atkinson Hyperlegible"', 'sans-serif'], // recommended accessibility font
+      dyslexia: ['"OpenDyslexic"', 'sans-serif'], // recommended accessibility font
       },
     },
   },

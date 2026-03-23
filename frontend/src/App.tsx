@@ -2,21 +2,28 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuthStore } from './store/useAuthStore';
 import { useSettingsStore } from "./store/useSettingsStore";
+import { useEffect } from "react"; // 👈 add this
 
 export default function App() {
-  // Login state from the auth zustand store
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
 
-  // Basic accessibility settings
   const contrast = useSettingsStore((s) => s.contrast);
   const fontSize = useSettingsStore((s) => s.fontSize);
   const lineHeight = useSettingsStore((s) => s.lineHeight);
   const reducedMotion = useSettingsStore((s) => s.reducedMotion);
   const dyslexiaFont = useSettingsStore((s) => s.dyslexiaFont);
 
+  // 👇 PUT IT RIGHT HERE
+  useEffect(() => {
+    document.documentElement.classList.toggle(
+      "font-dyslexia",
+      dyslexiaFont
+    );
+  }, [dyslexiaFont]);
+
   return (
     <div
-      className={`min-h-screen bg-white text-gray-900 ${dyslexiaFont ? "font-dyslexia" : ""}`}
+      className="min-h-screen bg-white text-gray-900"
       style={{
         filter: `contrast(${contrast}%)`,
         fontSize: `${fontSize}%`,

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* Base styles */
 @layer base {
   :root {
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -21,4 +22,9 @@
       transition: none !important;
     }
   }
+}
+
+/* Move the dyslexia font outside @layer base */
+html.font-dyslexia, html.font-dyslexia body, html.font-dyslexia * {
+  font-family: "OpenDyslexic", sans-serif !important;
 }
