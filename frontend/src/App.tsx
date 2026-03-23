@@ -1,8 +1,9 @@
 // src/App.tsx
-import { NavLink, Outlet } from 'react-router-dom';
-import { useAuthStore } from './store/useAuthStore';
+import { NavLink, Outlet } from "react-router-dom";
+import { useAuthStore } from "./store/useAuthStore";
 import { useSettingsStore } from "./store/useSettingsStore";
-import { useEffect } from "react"; // 👈 add this
+import { useEffect } from "react";
+import AudioPlayerBar from "./components/audioBar";
 
 export default function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -13,7 +14,7 @@ export default function App() {
   const reducedMotion = useSettingsStore((s) => s.reducedMotion);
   const dyslexiaFont = useSettingsStore((s) => s.dyslexiaFont);
 
-  // 👇 PUT IT RIGHT HERE
+  // Apply dyslexia font toggle globally
   useEffect(() => {
     document.documentElement.classList.toggle(
       "font-dyslexia",
@@ -118,9 +119,12 @@ export default function App() {
       </nav>
 
       {/* Page content */}
-      <main className="p-6">
+      <main className="p-6 pb-24">
         <Outlet />
       </main>
+
+      {/* Persistent Audio Player (global) */}
+      <AudioPlayerBar />
     </div>
   );
 }
