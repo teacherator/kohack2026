@@ -3,6 +3,16 @@ import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAudioStore } from '../store/useAudioStore';
 
+const API_BASE = import.meta.env.DEV
+  ? 'http://localhost:5000'
+  : 'https://lionfish-app-5f4rk.ondigitalocean.app';
+
+const AUDIO_PATHS = [
+  `${API_BASE}/audio/mishnah.mp3`,
+  `${API_BASE}/audio/mishnah_en.mp3`,
+  '/audio/mishnah.mp3',
+];
+
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
   const [hebrewSegments, setHebrewSegments] = useState<string[]>([]);
@@ -17,10 +27,6 @@ export default function MishnahYomiViewer() {
 
   // Load Hebrew text
   useEffect(() => {
-    const API_BASE = import.meta.env.DEV
-      ? 'http://localhost:5000'
-      : 'https://lionfish-app-5f4rk.ondigitalocean.app';
-
     const fetchHebrewText = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/hebrew-text`);
@@ -43,15 +49,9 @@ export default function MishnahYomiViewer() {
 
   // Load audio AFTER component mounts and AudioPlayerBar is mounted
   useEffect(() => {
-    // Try backend audio endpoint first (dev server), fall back to public path
-    const API_BASE = import.meta.env.DEV
-      ? 'http://localhost:5000'
-      : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
-
     (async () => {
       try {
-        const tryPaths = [`${API_BASE}/audio/mishnah.mp3`, `${API_BASE}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
-        for (const p of tryPaths) {
+        for (const p of AUDIO_PATHS) {
           try {
             const resp = await fetch(p, { method: 'HEAD' });
             if (resp.ok) {
