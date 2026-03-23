@@ -1,12 +1,12 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from email_service import send_update
-from main import tts
+from STC.stc import tts
 import os
 import json
 from googletrans import Translator
 from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data, save_outputs
-from backend.Sentence_Simplify import main as simplify_text
+from Sentence_Simplify import main as simplify_text
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests

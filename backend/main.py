@@ -1,6 +1,6 @@
 from gtts import gTTS
 from TTS import allignment
-from STC.main import STC
+from backend.STC.stc import STC
 
 def tts(text):
     """Generate English gTTS audio and return output path."""
