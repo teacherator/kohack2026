@@ -1,7 +1,6 @@
 from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from email_service import send_update
-from STC.stc import tts
 import os
 import json
 from googletrans import Translator

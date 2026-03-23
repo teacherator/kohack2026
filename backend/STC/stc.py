@@ -1,9 +1,8 @@
-from app.asr import transcribe_once
-from app.parser import parse_command
-from app.dispatcher import emit_command
-
-
 def STC():
+    from app.asr import transcribe_once
+    from app.parser import parse_command
+    from app.dispatcher import emit_command
+
     print("Voice command service (LOCAL) started.")
     print("Speak after 'Listening...'\n")
 
