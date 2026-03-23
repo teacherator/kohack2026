@@ -1,0 +1,10 @@
+transformers
+torch
+torchaudio
+sounddevice
+scipy
+numpy
+google-genai
+pydantic
+accelerate
+sentencepiece
