@@ -36,8 +36,16 @@ export default function MishnahYomiViewer() {
   const setAudioSrc = useAudioStore((s) => s.setSrc);
   const navigate = useNavigate();
 
+  const API_BASE = import.meta.env.DEV
+    ? 'http://localhost:5000'
+    : 'https://lionfish-app-5f4rk.ondigitalocean.app';
+
   // Load Hebrew text
   useEffect(() => {
+    const API_BASE = import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app';
+
     const fetchHebrewText = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/hebrew-text`);
@@ -54,18 +62,18 @@ export default function MishnahYomiViewer() {
     };
 
     fetchHebrewText();
-  }, []); //Linter is happy? API_BASE is inside effect
+  }, []);
 
-  // Load the audio file when this page mounts
+  // Load audio AFTER component mounts and AudioPlayerBar is mounted
   useEffect(() => {
     // Try backend audio endpoint first (dev server), fall back to public path
-    const audioBase = import.meta.env.DEV
+    const API_BASE = import.meta.env.DEV
       ? 'http://localhost:5000'
       : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
 
     (async () => {
       try {
-        const tryPaths = [`${audioBase}/audio/mishnah.mp3`, `${audioBase}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
+        const tryPaths = [`${API_BASE}/audio/mishnah.mp3`, `${API_BASE}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
         for (const p of tryPaths) {
           try {
             const resp = await fetch(p, { method: 'HEAD' });
@@ -84,55 +92,6 @@ export default function MishnahYomiViewer() {
       }
     })();
   }, []);
-
-  const handleVoiceCommand = (command: VoiceCommand | null) => {
-    if (!command) return;
-
-    switch (command.action) {
-      case 'navigate':
-        if (command.target === 'home') navigate('/');
-        if (command.target === 'settings') navigate('/settings');
-        break;
-      case 'go_back':
-        navigate(-1);
-        break;
-      case 'scroll_down':
-        window.scrollBy({ top: 300, behavior: 'smooth' });
-        break;
-      case 'scroll_up':
-        window.scrollBy({ top: -300, behavior: 'smooth' });
-        break;
-      default:
-        break;
-    }
-  };
-
-  const startVoiceCommand = async () => {
-    setStcLoading(true);
-    setStcMessage('Listening for a voice command...');
-    setTranscript('');
-
-    try {
-      const response = await fetch(`${API_BASE}/api/stc`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) throw new Error('Failed to start voice command');
-
-      const data: StcResponse = await response.json();
-      setStcMessage(data.message || 'Voice command complete.');
-      setTranscript(data.transcript || '');
-      handleVoiceCommand(data.command);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Voice command failed';
-      setStcMessage(message);
-    } finally {
-      setStcLoading(false);
-    }
-  };
 
   const parseVerses = (ref: string): string[] => {
     if (!ref) return [];
