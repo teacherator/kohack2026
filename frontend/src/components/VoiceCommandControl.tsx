@@ -86,7 +86,7 @@ function parseVoiceCommand(transcript: string): VoiceCommand {
     return { action: "navigate", path: "/login", message: "Opening login page." };
   }
 
-  if (text.includes("mishnah")) {
+  if (text.includes("mishna")) {
     return { action: "navigate", path: "/mishnah-yomi", message: "Opening Mishnah Yomi." };
   }
 

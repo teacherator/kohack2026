@@ -50,51 +50,16 @@ export default function App() {
             Home
           </NavLink>
 
-          {/* Dropdown - Learning Schedules */}
-          <div className="relative group inline-block">
-            <button
-              type="button"
-              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium focus:outline-none"
-            >
-              Learning Schedules
-              <svg
-                className="w-4 h-4 transition-transform group-hover:rotate-180"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            <div className="absolute left-0 top-full w-52 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-150 z-10">
-              <NavLink
-                to="/mishnah-yomi"
-                className={({ isActive }) =>
-                  isActive
-                    ? "block px-4 py-2.5 text-blue-700 font-medium bg-blue-50"
-                    : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700 font-medium"
-                }
-              >
-                Mishnah Yomi
-              </NavLink>
-              <NavLink
-                to="/other-schedule"
-                className={({ isActive }) =>
-                  isActive
-                    ? "block px-4 py-2.5 text-blue-700 font-medium bg-blue-50"
-                    : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700 font-medium"
-                }
-              >
-                Other Schedule
-              </NavLink>
-            </div>
-          </div>
+          <NavLink
+            to="/mishnah-yomi"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-700 font-semibold"
+                : "text-blue-600 hover:text-blue-700 hover:underline font-medium"
+            }
+          >
+            Mishnah Yomi
+          </NavLink>
 
           <NavLink
             to="/settings"
