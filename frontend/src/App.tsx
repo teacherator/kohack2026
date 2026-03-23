@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useSettingsStore } from "./store/useSettingsStore";
 import { useEffect } from "react";
-import AudioPlayerBar from "./components/audioBar";
+import AudioPlayerBar from "./components/AudioPlayerBar";
 
 export default function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -108,7 +108,7 @@ export default function App() {
           </NavLink>
         </div>
 
-        {/* Right - auth status */}
+        {/* Right (auth status) */}
         <div className="flex items-center gap-2 text-m font-medium">
           {isLoggedIn ? (
             <span className="text-green-600">Logged In</span>
