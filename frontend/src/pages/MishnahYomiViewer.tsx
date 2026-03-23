@@ -35,7 +35,7 @@ export default function MishnahYomiViewer() {
     };
 
     fetchHebrewText();
-  }, []); //Linter happy! API_BASE is inside effect
+  }, []); //Linter is happy? API_BASE is inside effect
 
   // Load the audio file when this page mounts
   useEffect(() => {
