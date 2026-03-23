@@ -1,4 +1,3 @@
-// src/App.tsx
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useSettingsStore } from "./store/useSettingsStore";
@@ -24,7 +23,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen bg-white text-gray-900"
+      className="min-h-screen flex flex-col bg-white text-gray-900"
       style={{
         filter: `contrast(${contrast}%)`,
         fontSize: `${fontSize}%`,
@@ -34,7 +33,6 @@ export default function App() {
     >
       {/* Navbar */}
       <nav className="border-b p-4 flex items-center justify-between">
-        {/* Left - links */}
         <div className="flex gap-8 items-center">
           <NavLink
             to="/"
@@ -70,7 +68,6 @@ export default function App() {
               </svg>
             </button>
 
-            {/* Dropdown menu */}
             <div className="absolute left-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-150 z-10">
               <NavLink
                 to="/mishnah-yomi"
@@ -108,7 +105,6 @@ export default function App() {
           </NavLink>
         </div>
 
-        {/* Right (auth status) */}
         <div className="flex items-center gap-2 text-m font-medium">
           {isLoggedIn ? (
             <span className="text-green-600">Logged In</span>
@@ -119,11 +115,11 @@ export default function App() {
       </nav>
 
       {/* Page content */}
-      <main className="p-6 pb-24">
+      <main className="flex-1 p-6 pb-32">
         <Outlet />
       </main>
 
-      {/* Persistent Audio Player (global) */}
+      {/* Persistent Audio Player */}
       <AudioPlayerBar />
     </div>
   );

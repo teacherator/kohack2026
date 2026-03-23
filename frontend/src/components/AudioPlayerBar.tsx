@@ -11,9 +11,7 @@ export default function AudioPlayerBar() {
   const { isPlaying, play, pause, currentTime, duration, setTime, src } = useAudioStore();
   const showAudioGlobally = useSettingsStore((s) => s.showAudioBar);
 
-  // Show audio player if:
-  // 1) user enabled globally OR
-  // 2) current route is Mishnah Yomi
+  // Show the player if Mishnah Yomi page OR user enabled globally
   if (!src && !(pathname === "/mishnah-yomi" || showAudioGlobally)) return null;
 
   const togglePlayback = () => {
