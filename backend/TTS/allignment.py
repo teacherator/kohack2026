@@ -1,12 +1,11 @@
 import json
 from mutagen.mp3 import MP3
 
+ALIGNMENT_INPUT = "TTS/alignment/alignment.json"
+REAL_AUDIO_FILE = "TTS/audio/mishnah_en.mp3"
 
-ALIGNMENT_INPUT = "alignment.json"
-REAL_AUDIO_FILE = "audio/mishnah_en.mp3"
-
-REMAPPED_CHARS_OUTPUT = "remapped_chars.json"
-WORD_ALIGNMENT_OUTPUT = "word_alignment.json"
+REMAPPED_CHARS_OUTPUT = "TTS/alignment/remapped_chars.json"
+WORD_ALIGNMENT_OUTPUT = "TTS/alignment/word_alignment.json"
 
 
 def load_alignment(path: str):
