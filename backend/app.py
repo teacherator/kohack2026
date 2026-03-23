@@ -6,7 +6,7 @@ import os
 import json
 from googletrans import Translator
 from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data, save_outputs
-from truman import main as simplify_text
+from backend.Sentence_Simplify import main as simplify_text
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
