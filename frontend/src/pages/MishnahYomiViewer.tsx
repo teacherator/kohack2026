@@ -14,7 +14,7 @@ export default function MishnahYomiViewer() {
   useEffect(() => {
     const fetchHebrewText = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/hebrew-text');
+        const response = await fetch('/api/hebrew-text');
         if (!response.ok) {
           throw new Error('Failed to fetch Hebrew text');
         }
