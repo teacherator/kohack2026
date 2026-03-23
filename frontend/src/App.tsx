@@ -1,8 +1,10 @@
+// src/App.tsx
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
 import { useSettingsStore } from "./store/useSettingsStore";
 import { useEffect } from "react";
 import AudioPlayerBar from "./components/AudioPlayerBar";
+import { Button } from "@/components/ui/button";
 
 export default function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -32,15 +34,16 @@ export default function App() {
       }}
     >
       {/* Navbar */}
-      <nav className="border-b p-4 flex items-center justify-between">
-        <div className="flex gap-8 items-center">
+      <nav className="border-b p-4 flex items-center justify-between bg-white shadow-sm">
+        {/* Left side links */}
+        <div className="flex gap-6 items-center">
           <NavLink
             to="/"
             end
             className={({ isActive }) =>
               isActive
-                ? "text-blue-700 font-bold"
-                : "text-blue-600 hover:underline font-medium"
+                ? "text-blue-700 font-semibold"
+                : "text-blue-600 hover:text-blue-700 hover:underline font-medium"
             }
           >
             Home
@@ -50,7 +53,7 @@ export default function App() {
           <div className="relative group inline-block">
             <button
               type="button"
-              className="flex items-center gap-1 text-blue-600 hover:underline font-medium focus:outline-none"
+              className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium focus:outline-none"
             >
               Learning Schedules
               <svg
@@ -68,16 +71,26 @@ export default function App() {
               </svg>
             </button>
 
-            <div className="absolute left-0 top-full w-48 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-150 z-10">
+            <div className="absolute left-0 top-full w-52 bg-white border border-gray-200 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-150 z-10">
               <NavLink
                 to="/mishnah-yomi"
                 className={({ isActive }) =>
                   isActive
                     ? "block px-4 py-2.5 text-blue-700 font-medium bg-blue-50"
-                    : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700"
+                    : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700 font-medium"
                 }
               >
                 Mishnah Yomi
+              </NavLink>
+              <NavLink
+                to="/other-schedule"
+                className={({ isActive }) =>
+                  isActive
+                    ? "block px-4 py-2.5 text-blue-700 font-medium bg-blue-50"
+                    : "block px-4 py-2.5 text-blue-600 hover:bg-gray-50 hover:text-blue-700 font-medium"
+                }
+              >
+                Other Schedule
               </NavLink>
             </div>
           </div>
@@ -86,8 +99,8 @@ export default function App() {
             to="/settings"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-700 font-bold"
-                : "text-blue-600 hover:underline font-medium"
+                ? "text-blue-700 font-semibold"
+                : "text-blue-600 hover:text-blue-700 hover:underline font-medium"
             }
           >
             User Settings
@@ -97,19 +110,43 @@ export default function App() {
             to="/about"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-700 font-bold"
-                : "text-blue-600 hover:underline font-medium"
+                ? "text-blue-700 font-semibold"
+                : "text-blue-600 hover:text-blue-700 hover:underline font-medium"
             }
           >
             About Us
           </NavLink>
         </div>
 
-        <div className="flex items-center gap-2 text-m font-medium">
+        {/* Right side: Guest Mode / Login */}
+        <div className="flex items-center gap-3">
           {isLoggedIn ? (
-            <span className="text-green-600">Logged In</span>
+            <>
+              <span className="text-green-600 font-semibold">Logged In</span>
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => {
+                  // TODO: logout handler
+                }}
+              >
+                Logout
+              </Button>
+            </>
           ) : (
-            <span className="text-gray-600">Guest</span>
+            <>
+              <span className="text-gray-600 font-semibold">Guest Mode</span>
+              <Button
+                variant="default"
+                size="lg"
+                className="bg-blue-600 text-white hover:bg-blue-700"
+                onClick={() => {
+                  // TODO: navigate to login page or open modal
+                }}
+              >
+                Login
+              </Button>
+            </>
           )}
         </div>
       </nav>
