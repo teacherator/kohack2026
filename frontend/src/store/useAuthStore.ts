@@ -1,15 +1,45 @@
+// src/store/useAuthStore.ts
 import { create } from "zustand";
 
-type AuthState = {
-  isLoggedIn: boolean; //Boolean for whether the user is logged in or out
-  login: () => void;
+interface User {
+  id?: string;
+  name?: string;
+  email?: string;
+}
+
+interface AuthState {
+  isLoggedIn: boolean;
+  token: string | null;
+  user?: User;
+
+  login: (token: string, user?: User) => void;
   logout: () => void;
-};
+  restore: () => void; // restores session from localStorage
+}
 
 export const useAuthStore = create<AuthState>((set) => ({
   isLoggedIn: false,
+  token: null,
+  user: undefined,
 
-  login: () => set({ isLoggedIn: true }), //Function sets status to logged in
+  login: (token, user) => {
+    localStorage.setItem("authToken", token);
+    if (user) localStorage.setItem("authUser", JSON.stringify(user));
+    set({ isLoggedIn: true, token, user });
+  },
 
-  logout: () => set({ isLoggedIn: false }), //Function sets status to not logged in
+  logout: () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("authUser");
+    set({ isLoggedIn: false, token: null, user: undefined });
+  },
+
+  restore: () => {
+    const token = localStorage.getItem("authToken");
+    const userStr = localStorage.getItem("authUser");
+    const user = userStr ? JSON.parse(userStr) : undefined;
+    if (token) {
+      set({ isLoggedIn: true, token, user });
+    }
+  },
 }));

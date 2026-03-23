@@ -138,16 +138,15 @@ export default function App() {
           ) : (
             <>
               <span className="text-gray-600 font-semibold">Guest Mode</span>
-              <Button
-                variant="default"
-                size="lg"
-                className="bg-blue-600 text-white hover:bg-blue-700"
-                onClick={() => {
-                  // TODO: navigate to login page or open modal
-                }}
-              >
-                Login
-              </Button>
+              <NavLink to="/login">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Login
+                </Button>
+              </NavLink>
             </>
           )}
         </div>
