@@ -26,10 +26,16 @@
   font-weight: bold;
   font-style: italic;
 }
-
+@font-face {
+  font-family: 'OpenDyslexicHebrew';
+  src: url('/fonts/dyslexia-hebrew-extended.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 @custom-variant dark (&:is(.dark *));
-.font-dyslexia { font-family: 'OpenDyslexic', sans-serif !important; }
+
 /* Base styles */
 @layer base {
   :root {
@@ -58,9 +64,41 @@
     @apply font-sans; }
 }
 
-/* Move the dyslexia font outside @layer base */
-html.font-dyslexia, html.font-dyslexia body, html.font-dyslexia * {
+/* Dyslexia font - apply when .font-dyslexia class is present */
+html.font-dyslexia {
   font-family: "OpenDyslexic", sans-serif !important;
+}
+
+html.font-dyslexia * {
+  font-family: "OpenDyslexic", sans-serif !important;
+}
+
+/* Hebrew text support in dyslexia mode - AGGRESSIVE SPECIFICITY */
+/* Match any element with lang="he" */
+html.font-dyslexia *[lang="he"] {
+  font-family: "OpenDyslexicHebrew", "Noto Sans Hebrew", "Arial Hebrew", "Calibri", "Arial", sans-serif !important;
+}
+
+/* Match all descendant elements of lang="he" */
+html.font-dyslexia *[lang="he"] * {
+  font-family: "OpenDyslexicHebrew", "Noto Sans Hebrew", "Arial Hebrew", "Calibri", "Arial", sans-serif !important;
+}
+
+/* Also apply to .hebrew class */
+html.font-dyslexia .hebrew {
+  font-family: "OpenDyslexicHebrew", "Noto Sans Hebrew", "Arial Hebrew", "Calibri", "Arial", sans-serif !important;
+}
+
+html.font-dyslexia .hebrew * {
+  font-family: "OpenDyslexicHebrew", "Noto Sans Hebrew", "Arial Hebrew", "Calibri", "Arial", sans-serif !important;
+}
+
+/* Additional fallback for all Hebrew lang elements when NOT in dyslexia mode */
+html:not(.font-dyslexia) *[lang="he"],
+html:not(.font-dyslexia) *[lang="he"] *,
+html:not(.font-dyslexia) *.hebrew,
+html:not(.font-dyslexia) *.hebrew * {
+  font-family: "Noto Sans Hebrew", "Arial Hebrew", "Calibri", "Arial", sans-serif !important;
 }
 
 @theme inline { --font-heading: var(--font-sans); --font-sans: 'Geist Variable', sans-serif; --color-sidebar-ring: var(--sidebar-ring); --color-sidebar-border: var(--sidebar-border); --color-sidebar-accent-foreground: var(--sidebar-accent-foreground); --color-sidebar-accent: var(--sidebar-accent); --color-sidebar-primary-foreground: var(--sidebar-primary-foreground); --color-sidebar-primary: var(--sidebar-primary); --color-sidebar-foreground: var(--sidebar-foreground); --color-sidebar: var(--sidebar); --color-chart-5: var(--chart-5); --color-chart-4: var(--chart-4); --color-chart-3: var(--chart-3); --color-chart-2: var(--chart-2); --color-chart-1: var(--chart-1); --color-ring: var(--ring); --color-input: var(--input); --color-border: var(--border); --color-destructive: var(--destructive); --color-accent-foreground: var(--accent-foreground); --color-accent: var(--accent); --color-muted-foreground: var(--muted-foreground); --color-muted: var(--muted); --color-secondary-foreground: var(--secondary-foreground); --color-secondary: var(--secondary); --color-primary-foreground: var(--primary-foreground); --color-primary: var(--primary); --color-popover-foreground: var(--popover-foreground); --color-popover: var(--popover); --color-card-foreground: var(--card-foreground); --color-card: var(--card); --color-foreground: var(--foreground); --color-background: var(--background); --radius-sm: calc(var(--radius) * 0.6); --radius-md: calc(var(--radius) * 0.8); --radius-lg: var(--radius); --radius-xl: calc(var(--radius) * 1.4); --radius-2xl: calc(var(--radius) * 1.8); --radius-3xl: calc(var(--radius) * 2.2); --radius-4xl: calc(var(--radius) * 2.6); }

@@ -88,7 +88,14 @@ export default function MishnahYomiViewer() {
   const textStyle = {
     fontSize: `${fontSize}%`,
     lineHeight: lineHeight,
-    fontFamily: dyslexiaFont ? 'OpenDyslexic, sans-serif' : 'inherit',
+    fontFamily: 'inherit',
+  };
+
+  // Hebrew-specific style when dyslexia font is enabled
+  const hebrewStyle = {
+    fontSize: `${fontSize}%`,
+    lineHeight: lineHeight,
+    fontFamily: dyslexiaFont ? 'OpenDyslexicHebrew, OpenDyslexic, Arial, sans-serif' : 'Arial, David, sans-serif',
   };
 
   const containerStyle = {
@@ -108,8 +115,8 @@ export default function MishnahYomiViewer() {
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (
-          <div>
-            <h2 className="text-2xl font-semibold mb-4" style={textStyle}>
+          <div lang="he" className="hebrew">
+            <h2 className="text-2xl font-semibold mb-4" style={hebrewStyle}>
               Daily Mishnah (Hebrew)
             </h2>
             {hebrewSegments.length > 0 ? (
@@ -120,8 +127,8 @@ export default function MishnahYomiViewer() {
                   const label = verses[index] ? `${tractate} ${verses[index]}` : `Segment ${index + 1}`;
                   return (
                     <div key={index} className="space-y-2">
-                      <h3 className="text-xl font-semibold" style={textStyle}>{label}</h3>
-                      <p className="text-lg leading-relaxed" style={textStyle}>
+                      <h3 className="text-xl font-semibold" style={hebrewStyle}>{label}</h3>
+                      <p className="text-lg leading-relaxed" style={hebrewStyle}>
                         {segment}
                       </p>
                     </div>
@@ -129,7 +136,7 @@ export default function MishnahYomiViewer() {
                 })}
               </div>
             ) : (
-              <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>
+              <p className="text-right text-lg leading-relaxed" dir="rtl" style={hebrewStyle}>
                 {hebrewText}
               </p>
             )}
