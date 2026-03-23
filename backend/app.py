@@ -5,8 +5,7 @@ from main import tts
 import os
 import json
 from googletrans import Translator
-from eleven import get_daily_mishnah_hebrew 
-from eleven import generate_tts_with_timestamps
+from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data
 from truman import main as simplify_text
 
 app = Flask(__name__)
@@ -63,7 +62,7 @@ def get_hebrew_text():
     Returns: {"hebrew_text": "text"}
     """
     try:
-        hebrew_text = get_daily_mishnah_hebrew()
+        hebrew_text = get_daily_mishnah_data()["hebrew_combined"]
         return jsonify({"hebrew_text": hebrew_text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -74,7 +73,7 @@ def serve_audio(filename):
 
 @app.route('/api/tts', methods=['POST'])
 def generate_tts():
-    generate_tts_with_timestamps(get_daily_mishnah_hebrew())
+    generate_tts_with_timestamps(get_daily_mishnah_data()["hebrew_combined"])
     audio_path = "audio/audio.mp3"
     if os.path.exists(audio_path):
         return send_file(audio_path, as_attachment=True, mimetype='audio/mpeg')
