@@ -1,5 +1,5 @@
 // src/components/Slider.tsx
-import React from "react";
+//import React from "react";
 
 interface SliderProps {
   label: string;

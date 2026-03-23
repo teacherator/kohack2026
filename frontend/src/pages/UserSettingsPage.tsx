@@ -19,7 +19,7 @@ export default function UserSettingsPage() {
           min={50}
           max={200}
           onChange={setContrast}
-          accentColor="accent-yellow-400"
+          accentColor="accent-blue-400"
         />
         <Slider
           label="Font Size"
@@ -27,7 +27,7 @@ export default function UserSettingsPage() {
           min={75}
           max={150}
           onChange={setFontSize}
-          accentColor="accent-pink-400"
+          accentColor="accent-blue-500"
         />
         <Slider
           label="Line Height"
@@ -46,15 +46,15 @@ export default function UserSettingsPage() {
           label="Dyslexia-friendly font"
           checked={dyslexiaFont}
           onChange={setDyslexiaFont}
-          onColor="bg-yellow-600"
-          offColor="bg-yellow-400"
+          onColor="bg-blue-600"
+          offColor="bg-blue-400"
         />
         <Toggle
           label="Reduced motion"
           checked={reducedMotion}
           onChange={setReducedMotion}
-          onColor="bg-pink-600"
-          offColor="bg-pink-400"
+          onColor="bg-blue-700"
+          offColor="bg-blue-500"
         />
       </div>
     </div>
