@@ -89,7 +89,10 @@ def get_hebrew_text():
 
 @app.route('/audio/<filename>')
 def serve_audio(filename):
-    return send_file(f"audio/{filename}", mimetype='audio/mpeg')
+    audio_path = os.path.join(os.path.dirname(__file__), 'TTS', 'audio', filename)
+    if not os.path.exists(audio_path):
+        return jsonify({"error": "Audio file not found"}), 404
+    return send_file(audio_path, mimetype='audio/mpeg')
 
 @app.route('/api/tts', methods=['POST'])
 def generate_tts():

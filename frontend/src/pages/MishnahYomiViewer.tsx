@@ -38,6 +38,8 @@ export default function MishnahYomiViewer() {
   const [stcLoading, setStcLoading] = useState<boolean>(false);
   const [stcMessage, setStcMessage] = useState<string>('');
   const [transcript, setTranscript] = useState<string>('');
+  const [simplifiedText, setSimplifiedText] = useState<string>('');
+  const [simplifyLoading, setSimplifyLoading] = useState<boolean>(false);
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
   const setAudioSrc = useAudioStore((s) => s.setSrc);
@@ -107,6 +109,26 @@ export default function MishnahYomiViewer() {
       setStcLoading(false);
     }
   };
+
+  const simplifyEnglishText = async () => {
+  if (!englishText) return;
+  setSimplifyLoading(true);
+  setSimplifiedText('');
+  try {
+    const response = await fetch(`${API_BASE}/api/simplify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: englishText }),
+    });
+    if (!response.ok) throw new Error('Failed to simplify text');
+    const data = await response.json();
+    setSimplifiedText(data.simplified);
+  } catch (err) {
+    setSimplifiedText('Error simplifying text.');
+  } finally {
+    setSimplifyLoading(false);
+  }
+};
 
   const parseVerses = (ref: string): string[] => {
     if (!ref) return [];
@@ -236,6 +258,23 @@ export default function MishnahYomiViewer() {
                 )}
               </div>
             )}
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={simplifyEnglishText}
+                disabled={simplifyLoading}
+                className="rounded-md bg-green-600 px-4 py-2 text-white font-semibold disabled:bg-green-300"
+                style={textStyle}
+              >
+                {simplifyLoading ? 'Simplifying...' : 'Simplify Text'}
+              </button>
+              {simplifiedText && (
+                <div className="mt-4 p-4 bg-green-50 rounded-md border border-green-200">
+                  <h3 className="text-xl font-semibold mb-2" style={textStyle}>Simplified</h3>
+                  <p className="text-lg leading-relaxed" style={textStyle}>{simplifiedText}</p>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
