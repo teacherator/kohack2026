@@ -4,7 +4,7 @@ import json
 import sys
 
 # ===== CONFIG =====
-API_KEY = "sk_66bf70b99e33b122703a58124821c88cfe07d705aa7ff760"
+API_KEY = "sk_6d88888544aa3f4041362e39b8b98371c01adc0d3e942d2a"
 VOICE_ID = "pNInz6obpgDQGcFmaJgB"
 MODEL_ID = "eleven_multilingual_v2"
 
@@ -113,13 +113,13 @@ def generate_tts_with_timestamps(text):
 def save_outputs(result, mishnah_data):
     audio_bytes = base64.b64decode(result["audio_base64"])
 
-    with open("audio.mp3", "wb") as f:
+    with open("backend\\TTS\\audio\\mishnah_en.mp3", "wb") as f:
         f.write(audio_bytes)
 
-    with open("alignment.json", "w", encoding="utf-8") as f:
+    with open("backend\\TTS\\alignment\\alignment.json", "w", encoding="utf-8") as f:
         json.dump(result["alignment"], f, ensure_ascii=False, indent=2)
 
-    with open("mishnah_data.json", "w", encoding="utf-8") as f:
+    with open("backend\\TTS\\alignment\\mishnah_data.json", "w", encoding="utf-8") as f:
         json.dump(mishnah_data, f, ensure_ascii=False, indent=2)
 
     print("Saved audio.mp3")

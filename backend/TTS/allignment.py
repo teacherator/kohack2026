@@ -1,11 +1,11 @@
 import json
 from mutagen.mp3 import MP3
 
-ALIGNMENT_INPUT = "TTS/alignment/alignment.json"
-REAL_AUDIO_FILE = "TTS/audio/mishnah_en.mp3"
+ALIGNMENT_INPUT = "backend\\TTS\\alignment\\alignment.json"
+REAL_AUDIO_FILE = "backend\\TTS\\audio\\mishnah_en.mp3"
 
-REMAPPED_CHARS_OUTPUT = "TTS/alignment/remapped_chars.json"
-WORD_ALIGNMENT_OUTPUT = "TTS/alignment/word_alignment.json"
+REMAPPED_CHARS_OUTPUT = "backend\\TTS\\alignment\\remapped_chars.json"
+WORD_ALIGNMENT_OUTPUT = "backend\\TTS\\alignment\\word_alignment.json"
 
 
 def load_alignment(path: str):
@@ -113,11 +113,16 @@ def save_json(path: str, data):
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def main():
-    char_alignment = load_alignment(ALIGNMENT_INPUT)
+def align_eleven_to_audio(
+    alignment_input=ALIGNMENT_INPUT,
+    real_audio_file=REAL_AUDIO_FILE,
+    remapped_chars_output=REMAPPED_CHARS_OUTPUT,
+    word_alignment_output=WORD_ALIGNMENT_OUTPUT,
+):
+    char_alignment = load_alignment(alignment_input)
 
     elevenlabs_duration = get_alignment_duration(char_alignment)
-    real_audio_duration = get_mp3_duration(REAL_AUDIO_FILE)
+    real_audio_duration = get_mp3_duration(real_audio_file)
 
     remapped_chars = remap_alignment(
         char_alignment,
@@ -127,17 +132,21 @@ def main():
 
     word_alignment = chars_to_words(remapped_chars)
 
-    save_json(REMAPPED_CHARS_OUTPUT, remapped_chars)
-    save_json(WORD_ALIGNMENT_OUTPUT, word_alignment)
+    save_json(remapped_chars_output, remapped_chars)
+    save_json(word_alignment_output, word_alignment)
 
     print("ElevenLabs alignment duration:", round(elevenlabs_duration, 3), "seconds")
     print("Real audio duration:", round(real_audio_duration, 3), "seconds")
-    print("Saved:", REMAPPED_CHARS_OUTPUT)
-    print("Saved:", WORD_ALIGNMENT_OUTPUT)
+    print("Saved:", remapped_chars_output)
+    print("Saved:", word_alignment_output)
 
     print("\nFirst 10 words:")
     for word in word_alignment[:10]:
         print(word)
+
+
+def main():
+    return align_eleven_to_audio()
 
 
 if __name__ == "__main__":

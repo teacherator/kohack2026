@@ -5,7 +5,7 @@ from main import tts
 import os
 import json
 from googletrans import Translator
-from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data
+from eleven import get_daily_mishnah_item, generate_tts_with_timestamps, get_daily_mishnah_data, save_outputs
 from truman import main as simplify_text
 
 app = Flask(__name__)
@@ -77,12 +77,48 @@ def serve_audio(filename):
 
 @app.route('/api/tts', methods=['POST'])
 def generate_tts():
-    generate_tts_with_timestamps(get_daily_mishnah_data()["hebrew_combined"])
-    audio_path = "audio/audio.mp3"
-    if os.path.exists(audio_path):
-        return send_file(audio_path, as_attachment=True, mimetype='audio/mpeg')
-    else:
-        return jsonify({"error": "Audio file not generated"}), 500
+    """
+    Generate TTS workflow:
+      1) load daily Hebrew Mishnah text
+      2) generate ElevenLabs TTS + alignment
+      3) translate Hebrew -> English
+      4) generate gTTS English audio
+      5) remap alignment to English audio
+      6) return english text + audio url + alignment
+    """
+    try:
+        # 1) Fetch daily Mishnah Hebrew text through existing Eleven helper
+        mishnah_data = get_daily_mishnah_data()
+        hebrew_text = mishnah_data["hebrew_combined"]
+
+        # 2) Save Eleven Labs audio+alignment files
+        eleven_result = generate_tts_with_timestamps(hebrew_text)
+        save_outputs(eleven_result, mishnah_data)
+
+        # 3) Translate to English
+        translator = Translator()
+        english_translation = translator.translate(hebrew_text, src='he', dest='en')
+        english_text = english_translation.text
+
+        # 4) Generate gTTS English audio and 5) align to Eleven timings
+        from main import tts_with_alignment
+        audio_file = tts_with_alignment(english_text)
+
+        # 6) Load the remapped word alignment file for frontend use
+        word_alignment_path = "word_alignment.json"
+        word_alignment = None
+        if os.path.exists(word_alignment_path):
+            with open(word_alignment_path, 'r', encoding='utf-8') as f:
+                word_alignment = json.load(f)
+
+        return jsonify({
+            "hebrew_text": hebrew_text,
+            "english_text": english_text,
+            "audio_url": "/audio/mishnah_en.mp3",
+            "alignment": word_alignment,
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/simplify', methods=['POST'])
 def simplify_text_endpoint():
