@@ -25,6 +25,9 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   setAudio: (audio) => set({ audio }),
 
   setSrc: (src) => {
+    const oldAudio = get().audio; //Loading new audio and stopping old audio
+    if (oldAudio) oldAudio.pause();
+
     const audio = new Audio(src);
 
     audio.ontimeupdate = () =>
@@ -33,7 +36,10 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     audio.onloadedmetadata = () =>
       set({ duration: audio.duration });
 
-    set({ audio, src, isPlaying: false });
+    audio.onended = () =>
+      set({ isPlaying: false });
+
+    set({ audio, src, isPlaying: false, currentTime: 0 });
   },
 
   play: () => {
@@ -44,7 +50,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({ isPlaying: true });
   },
 
-  pause: () => {
+  pause: () => { //Pausing the audio
     const audio = get().audio;
     if (!audio) return;
 
@@ -52,7 +58,7 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     set({ isPlaying: false });
   },
 
-  setTime: (time) => {
+  setTime: (time) => { //Current time variable
     const audio = get().audio;
     if (!audio) return;
 
