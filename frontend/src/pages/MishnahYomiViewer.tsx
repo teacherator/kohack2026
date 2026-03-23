@@ -1,4 +1,3 @@
-// MishnahYomiViewer.tsx
 import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
 
@@ -11,9 +10,9 @@ export default function MishnahYomiViewer() {
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
 
-const API_BASE = import.meta.env.DEV 
-  ? 'http://localhost:5000' 
-  : 'https://https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi'
+  const API_BASE = import.meta.env.DEV 
+    ? 'http://localhost:5000' 
+    : 'https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi';
 
   useEffect(() => {
     const fetchHebrewText = async () => {
@@ -67,14 +66,21 @@ const API_BASE = import.meta.env.DEV
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start pt-16 px-4" style={containerStyle}>
-      <h1 className="text-4xl font-bold mb-6" style={textStyle}>Mishnah Yomi Viewer</h1>
+    <div
+      className="flex flex-col flex-1 w-full items-center justify-start pt-6 px-4"
+      style={containerStyle}
+    >
+      <h1 className="text-4xl font-bold mb-6" style={textStyle}>
+        Mishnah Yomi Viewer
+      </h1>
       <div className="w-full max-w-2xl p-6 rounded-lg shadow-md" style={containerStyle}>
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (
           <div>
-            <h2 className="text-2xl font-semibold mb-4" style={textStyle}>Daily Mishnah (Hebrew)</h2>
+            <h2 className="text-2xl font-semibold mb-4" style={textStyle}>
+              Daily Mishnah (Hebrew)
+            </h2>
             {hebrewSegments.length > 0 ? (
               <div className="text-right space-y-4" dir="rtl">
                 {hebrewSegments.map((segment, index) => {
@@ -92,7 +98,9 @@ const API_BASE = import.meta.env.DEV
                 })}
               </div>
             ) : (
-              <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>{hebrewText}</p>
+              <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>
+                {hebrewText}
+              </p>
             )}
           </div>
         )}
