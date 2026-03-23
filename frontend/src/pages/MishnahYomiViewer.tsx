@@ -25,6 +25,8 @@ type StcResponse = {
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
   const [hebrewSegments, setHebrewSegments] = useState<string[]>([]);
+  const [englishText, setEnglishText] = useState<string>('');
+  const [englishSegments, setEnglishSegments] = useState<string[]>([]);
   const [ref, setRef] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
@@ -53,6 +55,8 @@ export default function MishnahYomiViewer() {
         const data = await response.json();
         setHebrewText(data.hebrew_text);
         setHebrewSegments(data.hebrew_segments || []);
+        setEnglishText(data.english_text || '');
+        setEnglishSegments(data.english_segments || []);
         setRef(data.ref || '');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
@@ -184,30 +188,63 @@ export default function MishnahYomiViewer() {
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (
-          <div lang="he" className="hebrew">
-            <h2 className="text-2xl font-semibold mb-4" style={hebrewStyle}>
-              Daily Mishnah (Hebrew)
-            </h2>
-            {hebrewSegments.length > 0 ? (
-              <div className="text-right space-y-4" dir="rtl">
-                {hebrewSegments.map((segment, index) => {
-                  const verses = parseVerses(ref);
-                  const tractate = ref.replace(/ \d+:\d+-\d+$/, '');
-                  const label = verses[index] ? `${tractate} ${verses[index]}` : `Segment ${index + 1}`;
-                  return (
-                    <div key={index} className="space-y-2">
-                      <h3 className="text-xl font-semibold" style={hebrewStyle}>{label}</h3>
-                      <p className="text-lg leading-relaxed" style={hebrewStyle}>
-                        {segment}
-                      </p>
-                    </div>
-                  );
-                })}
+          <div className="space-y-8">
+            {/* Hebrew Section */}
+            <div lang="he" className="hebrew">
+              <h2 className="text-2xl font-semibold mb-4" style={hebrewStyle}>
+                Daily Mishnah (Hebrew)
+              </h2>
+              {hebrewSegments.length > 0 ? (
+                <div className="text-right space-y-4" dir="rtl">
+                  {hebrewSegments.map((segment, index) => {
+                    const verses = parseVerses(ref);
+                    const tractate = ref.replace(/ \d+:\d+-\d+$/, '');
+                    const label = verses[index] ? `${tractate} ${verses[index]}` : `Segment ${index + 1}`;
+                    return (
+                      <div key={index} className="space-y-2">
+                        <h3 className="text-xl font-semibold" style={hebrewStyle}>{label}</h3>
+                        <p className="text-lg leading-relaxed" style={hebrewStyle}>
+                          {segment}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-right text-lg leading-relaxed" dir="rtl" style={hebrewStyle}>
+                  {hebrewText}
+                </p>
+              )}
+            </div>
+
+            {/* English Translation Section */}
+            {englishText && (
+              <div lang="en" className="english border-t pt-6">
+                <h2 className="text-2xl font-semibold mb-4" style={textStyle}>
+                  English Translation
+                </h2>
+                {englishSegments.length > 0 ? (
+                  <div className="text-left space-y-4" dir="ltr">
+                    {englishSegments.map((segment, index) => {
+                      const verses = parseVerses(ref);
+                      const tractate = ref.replace(/ \d+:\d+-\d+$/, '');
+                      const label = verses[index] ? `${tractate} ${verses[index]}` : `Segment ${index + 1}`;
+                      return (
+                        <div key={index} className="space-y-2">
+                          <h3 className="text-xl font-semibold" style={textStyle}>{label}</h3>
+                          <p className="text-lg leading-relaxed" style={textStyle}>
+                            {segment}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-left text-lg leading-relaxed" dir="ltr" style={textStyle}>
+                    {englishText}
+                  </p>
+                )}
               </div>
-            ) : (
-              <p className="text-right text-lg leading-relaxed" dir="rtl" style={hebrewStyle}>
-                {hebrewText}
-              </p>
             )}
           </div>
         )}

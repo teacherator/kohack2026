@@ -58,14 +58,30 @@ def translate_text():
 @app.route('/api/hebrew-text', methods=['GET'])
 def get_hebrew_text():
     """
-    Get the daily Mishnah Hebrew text.
-    Returns: {"hebrew_text": "text", "hebrew_segments": [], "ref": "ref"}
+    Get the daily Mishnah Hebrew text with English translation.
+    Returns: {"hebrew_text": "text", "hebrew_segments": [], "english_text": "text", "english_segments": [], "ref": "ref"}
     """
     try:
         data = get_daily_mishnah_data()
+        hebrew_text = data["hebrew_combined"]
+        
+        # Translate to English
+        translator = Translator()
+        english_translation = translator.translate(hebrew_text, src='he', dest='en')
+        english_text = english_translation.text
+        
+        # Translate individual segments if available
+        english_segments = []
+        if data.get("hebrew_segments"):
+            for segment in data["hebrew_segments"]:
+                translated_segment = translator.translate(segment, src='he', dest='en')
+                english_segments.append(translated_segment.text)
+        
         return jsonify({
-            "hebrew_text": data["hebrew_combined"],
+            "hebrew_text": hebrew_text,
             "hebrew_segments": data["hebrew_segments"],
+            "english_text": english_text,
+            "english_segments": english_segments,
             "ref": data["ref"]
         })
     except Exception as e:
