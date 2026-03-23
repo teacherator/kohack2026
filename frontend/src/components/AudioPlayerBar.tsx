@@ -6,6 +6,13 @@ import { useAudioStore } from "@/store/useAudioStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useLocation } from "react-router-dom";
 
+// Utility: convert seconds to mm:ss
+function formatTime(seconds: number) {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
 export default function AudioPlayerBar() {
   const { pathname } = useLocation();
   const { isPlaying, play, pause, currentTime, duration, setTime, src } = useAudioStore();
@@ -22,10 +29,12 @@ export default function AudioPlayerBar() {
   return (
     <div className="fixed bottom-0 left-0 w-full border-t bg-blue-200 px-6 py-4 shadow-inner z-50">
       <div className="max-w-4xl mx-auto flex items-center gap-4">
+        {/* Play/Pause button */}
         <Button size="icon" variant="outline" onClick={togglePlayback}>
           {isPlaying ? <Pause size={18} /> : <Play size={18} />}
         </Button>
 
+        {/* Slider */}
         <Slider
           value={[currentTime]}
           max={duration || 1}
@@ -34,8 +43,9 @@ export default function AudioPlayerBar() {
           className="flex-1"
         />
 
-        <span className="text-sm text-blue-800 w-16 text-right">
-          {Math.floor(currentTime)}s
+        {/* Time display */}
+        <span className="text-sm text-blue-800 w-24 text-right font-mono">
+          {formatTime(currentTime)} / {formatTime(duration || 0)}
         </span>
       </div>
     </div>

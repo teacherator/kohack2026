@@ -1,5 +1,7 @@
+// src/pages/MishnahYomiViewer.tsx
 import { useState, useEffect } from 'react';
 import { useSettingsStore } from '../store/useSettingsStore';
+import { useAudioStore } from '../store/useAudioStore';
 
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
@@ -9,18 +11,18 @@ export default function MishnahYomiViewer() {
   const [error, setError] = useState<string>('');
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
+  const setAudioSrc = useAudioStore((s) => s.setSrc);
 
-  const API_BASE = import.meta.env.DEV 
-    ? 'http://localhost:5000' 
-    : 'https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi';
-
+  // Load Hebrew text
   useEffect(() => {
+    const API_BASE = import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi';
+
     const fetchHebrewText = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/hebrew-text`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch Hebrew text');
-        }
+        if (!response.ok) throw new Error('Failed to fetch Hebrew text');
         const data = await response.json();
         setHebrewText(data.hebrew_text);
         setHebrewSegments(data.hebrew_segments || []);
@@ -33,6 +35,12 @@ export default function MishnahYomiViewer() {
     };
 
     fetchHebrewText();
+  }, []); //Linter happy! API_BASE is inside effect
+
+  // Load the audio file when this page mounts
+  useEffect(() => {
+    // Use a public folder path for React/Vite
+    setAudioSrc('/audio/mishnah.mp3'); // <-- put your audio in public/audio/mishnah.mp3
   }, []);
 
   const parseVerses = (ref: string): string[] => {
