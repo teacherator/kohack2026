@@ -6,6 +6,8 @@ import os
 import json
 # from googletrans import Translator
 from eleven import get_daily_mishnah_hebrew 
+from eleven import generate_tts_with_timestamps
+from truman import main as simplify_text
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
@@ -69,6 +71,25 @@ def get_hebrew_text():
 @app.route('/audio/<filename>')
 def serve_audio(filename):
     return send_file(f"audio/{filename}", mimetype='audio/mpeg')
+
+@app.route('/api/tts', methods=['POST'])
+def generate_tts():
+    generate_tts_with_timestamps(get_daily_mishnah_hebrew())
+    audio_path = "audio/audio.mp3"
+    if os.path.exists(audio_path):
+        return send_file(audio_path, as_attachment=True, mimetype='audio/mpeg')
+    else:
+        return jsonify({"error": "Audio file not generated"}), 500
+
+@app.route('/api/simplify', methods=['POST'])
+def simplify_text_endpoint():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({"error": "Missing 'text' in request"}), 400
+
+    text = data['text']
+    simplified = simplify_text(text)
+    return jsonify({"simplified": simplified})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
