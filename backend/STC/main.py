@@ -3,7 +3,7 @@ from app.parser import parse_command
 from app.dispatcher import emit_command
 
 
-def main():
+def STC():
     print("Voice command service (LOCAL) started.")
     print("Speak after 'Listening...'\n")
 
@@ -32,4 +32,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    STC()

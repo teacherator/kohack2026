@@ -1,6 +1,6 @@
 from gtts import gTTS
 from TTS import allignment
-
+from STC.main import STC
 
 def tts(text):
     """Generate English gTTS audio and return output path."""
@@ -20,3 +20,7 @@ def tts_with_alignment(english_text):
         word_alignment_output="word_alignment.json",
     )
     return audio_file
+def STC():
+    """Run the Speech-to-Command loop."""
+    print("Starting STC...")
+    STC()
