@@ -39,8 +39,31 @@ export default function MishnahYomiViewer() {
 
   // Load the audio file when this page mounts
   useEffect(() => {
-    // Use a public folder path for React/Vite
-    setAudioSrc('/audio/mishnah.mp3'); // <-- put your audio in public/audio/mishnah.mp3
+    // Try backend audio endpoint first (dev server), fall back to public path
+    const API_BASE = import.meta.env.DEV
+      ? 'http://localhost:5000'
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
+
+    (async () => {
+      try {
+        const tryPaths = [`${API_BASE}/audio/mishnah.mp3`, `${API_BASE}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
+        for (const p of tryPaths) {
+          try {
+            const resp = await fetch(p, { method: 'HEAD' });
+            if (resp.ok) {
+              setAudioSrc(p);
+              return;
+            }
+          } catch (e) {
+            // ignore and try next
+          }
+        }
+        // fallback to original suggestion if none found
+        setAudioSrc('/audio/mishnah.mp3');
+      } catch (err) {
+        setAudioSrc('/audio/mishnah.mp3');
+      }
+    })();
   }, []);
 
   const parseVerses = (ref: string): string[] => {
