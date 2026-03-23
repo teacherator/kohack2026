@@ -17,7 +17,7 @@ export default function MishnahYomiViewer() {
   useEffect(() => {
     const API_BASE = import.meta.env.DEV
       ? 'http://localhost:5000'
-      : 'https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi';
+      : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
 
     const fetchHebrewText = async () => {
       try {
