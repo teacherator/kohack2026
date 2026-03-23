@@ -113,7 +113,7 @@ def generate_tts_with_timestamps(text):
 def save_outputs(result, mishnah_data):
     audio_bytes = base64.b64decode(result["audio_base64"])
 
-    with open("backend\\TTS\\audio\\mishnah_en.mp3", "wb") as f:
+    with open("backend\\TTS\\audio\\mishnah.mp3", "wb") as f:
         f.write(audio_bytes)
 
     with open("backend\\TTS\\alignment\\alignment.json", "w", encoding="utf-8") as f:
