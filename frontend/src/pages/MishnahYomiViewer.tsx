@@ -4,6 +4,7 @@ import { useSettingsStore } from '../store/useSettingsStore';
 
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
+  const [hebrewSegments, setHebrewSegments] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -18,6 +19,7 @@ export default function MishnahYomiViewer() {
         }
         const data = await response.json();
         setHebrewText(data.hebrew_text);
+        setHebrewSegments(data.hebrew_segments || []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -48,7 +50,17 @@ export default function MishnahYomiViewer() {
         {hebrewText && (
           <div>
             <h2 className="text-2xl font-semibold mb-4" style={textStyle}>Daily Mishnah (Hebrew)</h2>
-            <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>{hebrewText}</p>
+            {hebrewSegments.length > 0 ? (
+              <div className="text-right space-y-4" dir="rtl" style={textStyle}>
+                {hebrewSegments.map((segment, index) => (
+                  <p key={index} className="text-lg leading-relaxed">
+                    {segment}
+                  </p>
+                ))}
+              </div>
+            ) : (
+              <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>{hebrewText}</p>
+            )}
           </div>
         )}
       </div>
