@@ -59,11 +59,14 @@ def translate_text():
 def get_hebrew_text():
     """
     Get the daily Mishnah Hebrew text.
-    Returns: {"hebrew_text": "text"}
+    Returns: {"hebrew_text": "text", "hebrew_segments": []}
     """
     try:
-        hebrew_text = get_daily_mishnah_data()["hebrew_combined"]
-        return jsonify({"hebrew_text": hebrew_text})
+        data = get_daily_mishnah_data()
+        return jsonify({
+            "hebrew_text": data["hebrew_combined"],
+            "hebrew_segments": data["hebrew_segments"]
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
