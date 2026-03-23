@@ -1,4 +1,4 @@
-def STC():
+def STC(on_processed=None):
     from app.asr import transcribe_once
     from app.parser import parse_command
     from app.dispatcher import emit_command
@@ -13,6 +13,7 @@ def STC():
 
             if not transcript:
                 continue
+
             command = parse_command(transcript)
 
             if command["action"] == "exit":
@@ -21,6 +22,10 @@ def STC():
 
             emit_command(command)
 
+            # 👇 THIS IS THE KEY
+            if on_processed:
+                on_processed(transcript, command)
+
             print("\n---\n")
 
         except KeyboardInterrupt:
@@ -28,7 +33,3 @@ def STC():
             break
         except Exception as e:
             print("Error:", e)
-
-
-if __name__ == "__main__":
-    STC()
