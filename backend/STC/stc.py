@@ -1,6 +1,6 @@
-from app.asr import transcribe_once
-from app.parser import parse_command
-from app.dispatcher import emit_command
+from .app.asr import transcribe_once
+from .app.parser import parse_command
+from .app.dispatcher import emit_command
 
 
 def STC():
