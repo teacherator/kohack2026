@@ -1,5 +1,8 @@
 from gtts import gTTS
+from TTS import allignment
 
-def tts(text, language):
-    tts = gTTS(text, lang=language)
-    tts.save(f"audio/mishnah_{language}.mp3")
+def tts(text, language='en'):
+    # Force English only
+    tts = gTTS(text, lang='en')
+    tts.save(f"audio/mishnah_en.mp3")
+    allignment.main()

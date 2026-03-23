@@ -3,6 +3,8 @@ from flask_cors import CORS
 from email_service import send_update
 from main import tts
 import os
+import json
+from googletrans import Translator
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend requests
@@ -27,38 +29,33 @@ def send_email_update():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/tts', methods=['POST'])
-def generate_tts():
+@app.route('/api/translate', methods=['POST'])
+def translate_text():
     """
-    Generate TTS audio for given text and language.
-    Expects JSON: {"text": "mishnah text", "language": "en"}
-    Returns the audio file.
-    Disability-friendly: Provides audio alternative for visually impaired users.
-    Note: Current TTS only supports language; voice/speed not yet implemented.
+    Translate text using Google Translate.
+    Expects JSON: {"text": "mishnah text", "src": "iw", "dest": "en"}
+    Defaults: src="iw" (Hebrew), dest="en" (English)
+    Returns: {"translated": "translated text"}
+    Disability-friendly: Provides translations for accessibility.
     """
     data = request.get_json()
     if not data or 'text' not in data:
         return jsonify({"error": "Missing 'text' in request"}), 400
 
     text = data['text']
-    language = data.get('language', 'en')
+    src = data.get('src', 'iw')  # Default Hebrew
+    dest = data.get('dest', 'en')  # Default English
 
     try:
-        tts(text, language)
-        audio_path = f"audio/mishnah_{language}.mp3"
-        if os.path.exists(audio_path):
-            return send_file(audio_path, as_attachment=True, mimetype='audio/mpeg')
-        else:
-            return jsonify({"error": "Audio file not generated"}), 500
+        translator = Translator()
+        translated = translator.translate(text, src=src, dest=dest)
+        return jsonify({"translated": translated.text})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/health', methods=['GET'])
-def health_check():
-    """
-    Basic health check endpoint.
-    """
-    return jsonify({"status": "OK"})
+@app.route('/audio/<filename>')
+def serve_audio(filename):
+    return send_file(f"audio/{filename}", mimetype='audio/mpeg')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

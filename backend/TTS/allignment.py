@@ -3,7 +3,7 @@ from mutagen.mp3 import MP3
 
 
 ALIGNMENT_INPUT = "alignment.json"
-REAL_AUDIO_FILE = "audio/mishnah_iw.mp3"
+REAL_AUDIO_FILE = "audio/mishnah_en.mp3"
 
 REMAPPED_CHARS_OUTPUT = "remapped_chars.json"
 WORD_ALIGNMENT_OUTPUT = "word_alignment.json"
