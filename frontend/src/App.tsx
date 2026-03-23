@@ -96,16 +96,16 @@ export default function App() {
                 : "text-blue-600 hover:underline font-medium"
             }
           >
-            About
+            About Us
           </NavLink>
         </div>
 
         {/* Right - auth status */}
-        <div className="flex items-center gap-2 text-sm font-medium">
+        <div className="flex items-center gap-2 text-m font-medium">
           {isLoggedIn ? (
             <span className="text-green-600">Logged In</span>
           ) : (
-            <span className="text-gray-500">Guest</span>
+            <span className="text-gray-600">Guest</span>
           )}
         </div>
       </nav>
