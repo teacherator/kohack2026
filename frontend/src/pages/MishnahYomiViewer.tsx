@@ -13,20 +13,6 @@ const AUDIO_PATHS = [
   '/audio/mishnah.mp3',
 ];
 
-type VoiceCommand = {
-  action: string;
-  target: string | null;
-  confidence: number;
-  spoken_text: string;
-};
-
-type StcResponse = {
-  status: string;
-  transcript: string;
-  command: VoiceCommand | null;
-  message: string;
-};
-
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
   const [hebrewSegments, setHebrewSegments] = useState<string[]>([]);
@@ -38,8 +24,6 @@ export default function MishnahYomiViewer() {
   const [stcLoading, setStcLoading] = useState<boolean>(false);
   const [stcMessage, setStcMessage] = useState<string>('');
   const [transcript, setTranscript] = useState<string>('');
-  const [simplifiedText, setSimplifiedText] = useState<string>('');
-  const [simplifyLoading, setSimplifyLoading] = useState<boolean>(false);
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
   const setAudioSrc = useAudioStore((s) => s.setSrc);
@@ -110,26 +94,6 @@ export default function MishnahYomiViewer() {
     }
   };
 
-  const simplifyEnglishText = async () => {
-  if (!englishText) return;
-  setSimplifyLoading(true);
-  setSimplifiedText('');
-  try {
-    const response = await fetch(`${API_BASE}/api/simplify`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: englishText }),
-    });
-    if (!response.ok) throw new Error('Failed to simplify text');
-    const data = await response.json();
-    setSimplifiedText(data.simplified);
-  } catch (err) {
-    setSimplifiedText('Error simplifying text.');
-  } finally {
-    setSimplifyLoading(false);
-  }
-};
-
   const parseVerses = (ref: string): string[] => {
     if (!ref) return [];
     const parts = ref.split(' ');
@@ -176,27 +140,6 @@ export default function MishnahYomiViewer() {
         Mishnah Yomi Viewer
       </h1>
       <div className="w-full max-w-2xl p-6 rounded-lg shadow-md" style={containerStyle}>
-        <div className="mb-6 flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={startVoiceCommand}
-            disabled={stcLoading}
-            className="w-full rounded-md bg-blue-600 px-4 py-3 text-white font-semibold disabled:cursor-not-allowed disabled:bg-blue-300"
-            style={textStyle}
-          >
-            {stcLoading ? 'Listening...' : 'Start Voice Command'}
-          </button>
-          {stcMessage && (
-            <p aria-live="polite" style={textStyle}>
-              {stcMessage}
-            </p>
-          )}
-          {transcript && (
-            <p style={textStyle}>
-              <span className="font-semibold">Heard:</span> {transcript}
-            </p>
-          )}
-        </div>
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (

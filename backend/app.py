@@ -58,27 +58,36 @@ def translate_text():
 @app.route('/api/hebrew-text', methods=['GET'])
 def get_hebrew_text():
     """
-    Get the daily Mishnah Hebrew text with English translation.
+    Get the daily Mishnah Hebrew text.
     Returns: {"hebrew_text": "text", "hebrew_segments": [], "english_text": "text", "english_segments": [], "ref": "ref"}
     """
     try:
         data = get_daily_mishnah_data()
-        hebrew_text = data["hebrew_combined"]
-        
-        # Translate to English
         translator = Translator()
-        english_translation = translator.translate(hebrew_text, src='he', dest='en')
-        english_text = english_translation.text
-        
-        # Translate individual segments if available
+
+        english_text = ""
         english_segments = []
-        if data.get("hebrew_segments"):
-            for segment in data["hebrew_segments"]:
-                translated_segment = translator.translate(segment, src='he', dest='en')
-                english_segments.append(translated_segment.text)
-        
+
+        if data.get("hebrew_combined"):
+            english_text = translator.translate(
+                data["hebrew_combined"],
+                src='he',
+                dest='en'
+            ).text
+
+        for segment in data.get("hebrew_segments", []):
+            try:
+                translated_segment = translator.translate(
+                    segment,
+                    src='he',
+                    dest='en'
+                ).text
+            except Exception:
+                translated_segment = ""
+            english_segments.append(translated_segment)
+
         return jsonify({
-            "hebrew_text": hebrew_text,
+            "hebrew_text": data["hebrew_combined"],
             "hebrew_segments": data["hebrew_segments"],
             "english_text": english_text,
             "english_segments": english_segments,

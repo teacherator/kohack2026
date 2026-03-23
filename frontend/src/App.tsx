@@ -5,6 +5,7 @@ import { useSettingsStore } from "./store/useSettingsStore";
 import { useEffect } from "react";
 import AudioPlayerBar from "./components/AudioPlayerBar";
 import { Button } from "@/components/ui/button";
+import VoiceCommandControl from "./components/VoiceCommandControl";
 
 export default function App() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -120,6 +121,7 @@ export default function App() {
 
         {/* Right side: Guest Mode / Login */}
         <div className="flex items-center gap-3">
+          <VoiceCommandControl />
           {isLoggedIn ? (
             <>
               <span className="text-green-600 font-semibold">Logged In</span>
