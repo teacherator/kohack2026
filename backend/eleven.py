@@ -4,7 +4,7 @@ import json
 import sys
 
 # ===== CONFIG =====
-API_KEY = "REPLACE_ME"
+API_KEY = "sk_66bf70b99e33b122703a58124821c88cfe07d705aa7ff760"
 VOICE_ID = "pNInz6obpgDQGcFmaJgB"
 MODEL_ID = "eleven_multilingual_v2"
 
@@ -58,7 +58,6 @@ def get_daily_mishnah_data():
     data = response.json()
 
     hebrew_segments = get_text_segments_from_versions(data.get("versions", []), "he")
-    english_segments = get_text_segments_from_versions(data.get("versions", []), "en")
 
     if not hebrew_segments:
         raise RuntimeError("Could not find Hebrew text in Sefaria response.")
@@ -69,9 +68,7 @@ def get_daily_mishnah_data():
         "ref": mishnah_item.get("ref"),
         "url": mishnah_item.get("url"),
         "hebrew_segments": hebrew_segments,
-        "english_segments": english_segments,
         "hebrew_combined": " ".join(hebrew_segments),
-        "english_combined": " ".join(english_segments),
     }
 
 
@@ -143,11 +140,6 @@ def main():
 
     print("Hebrew segments:")
     for i, seg in enumerate(mishnah_data["hebrew_segments"], start=1):
-        print(f"{i}. {seg}")
-    print()
-
-    print("English segments:")
-    for i, seg in enumerate(mishnah_data["english_segments"], start=1):
         print(f"{i}. {seg}")
     print()
 
