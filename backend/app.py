@@ -134,7 +134,7 @@ def simplify_text_endpoint():
 def start_stc():
     try:
         result = STC()
-        return jsonify({"message": "STC started successfully!", "result": result})
+        return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

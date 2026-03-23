@@ -1,7 +1,26 @@
 // src/pages/MishnahYomiViewer.tsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSettingsStore } from '../store/useSettingsStore';
 import { useAudioStore } from '../store/useAudioStore';
+
+const API_BASE = import.meta.env.DEV
+  ? 'http://localhost:5000'
+  : 'https://lionfish-app-5f4rk.ondigitalocean.app';
+
+type VoiceCommand = {
+  action: string;
+  target: string | null;
+  confidence: number;
+  spoken_text: string;
+};
+
+type StcResponse = {
+  status: string;
+  transcript: string;
+  command: VoiceCommand | null;
+  message: string;
+};
 
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
@@ -9,16 +28,16 @@ export default function MishnahYomiViewer() {
   const [ref, setRef] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
+  const [stcLoading, setStcLoading] = useState<boolean>(false);
+  const [stcMessage, setStcMessage] = useState<string>('');
+  const [transcript, setTranscript] = useState<string>('');
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
   const setAudioSrc = useAudioStore((s) => s.setSrc);
+  const navigate = useNavigate();
 
   // Load Hebrew text
   useEffect(() => {
-    const API_BASE = import.meta.env.DEV
-      ? 'http://localhost:5000'
-      : 'https://lionfish-app-5f4rk.ondigitalocean.app';
-
     const fetchHebrewText = async () => {
       try {
         const response = await fetch(`${API_BASE}/api/hebrew-text`);
@@ -40,13 +59,13 @@ export default function MishnahYomiViewer() {
   // Load the audio file when this page mounts
   useEffect(() => {
     // Try backend audio endpoint first (dev server), fall back to public path
-    const API_BASE = import.meta.env.DEV
+    const audioBase = import.meta.env.DEV
       ? 'http://localhost:5000'
       : 'https://lionfish-app-5f4rk.ondigitalocean.app/';
 
     (async () => {
       try {
-        const tryPaths = [`${API_BASE}/audio/mishnah.mp3`, `${API_BASE}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
+        const tryPaths = [`${audioBase}/audio/mishnah.mp3`, `${audioBase}/audio/mishnah_en.mp3`, '/audio/mishnah.mp3'];
         for (const p of tryPaths) {
           try {
             const resp = await fetch(p, { method: 'HEAD' });
@@ -65,6 +84,55 @@ export default function MishnahYomiViewer() {
       }
     })();
   }, []);
+
+  const handleVoiceCommand = (command: VoiceCommand | null) => {
+    if (!command) return;
+
+    switch (command.action) {
+      case 'navigate':
+        if (command.target === 'home') navigate('/');
+        if (command.target === 'settings') navigate('/settings');
+        break;
+      case 'go_back':
+        navigate(-1);
+        break;
+      case 'scroll_down':
+        window.scrollBy({ top: 300, behavior: 'smooth' });
+        break;
+      case 'scroll_up':
+        window.scrollBy({ top: -300, behavior: 'smooth' });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const startVoiceCommand = async () => {
+    setStcLoading(true);
+    setStcMessage('Listening for a voice command...');
+    setTranscript('');
+
+    try {
+      const response = await fetch(`${API_BASE}/api/stc`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) throw new Error('Failed to start voice command');
+
+      const data: StcResponse = await response.json();
+      setStcMessage(data.message || 'Voice command complete.');
+      setTranscript(data.transcript || '');
+      handleVoiceCommand(data.command);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Voice command failed';
+      setStcMessage(message);
+    } finally {
+      setStcLoading(false);
+    }
+  };
 
   const parseVerses = (ref: string): string[] => {
     if (!ref) return [];
@@ -112,6 +180,27 @@ export default function MishnahYomiViewer() {
         Mishnah Yomi Viewer
       </h1>
       <div className="w-full max-w-2xl p-6 rounded-lg shadow-md" style={containerStyle}>
+        <div className="mb-6 flex flex-col gap-3">
+          <button
+            type="button"
+            onClick={startVoiceCommand}
+            disabled={stcLoading}
+            className="w-full rounded-md bg-blue-600 px-4 py-3 text-white font-semibold disabled:cursor-not-allowed disabled:bg-blue-300"
+            style={textStyle}
+          >
+            {stcLoading ? 'Listening...' : 'Start Voice Command'}
+          </button>
+          {stcMessage && (
+            <p aria-live="polite" style={textStyle}>
+              {stcMessage}
+            </p>
+          )}
+          {transcript && (
+            <p style={textStyle}>
+              <span className="font-semibold">Heard:</span> {transcript}
+            </p>
+          )}
+        </div>
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (
