@@ -93,6 +93,27 @@ export default function MishnahYomiViewer() {
     })();
   }, []);
 
+  const startVoiceCommand = async () => {
+    setStcLoading(true);
+    setStcMessage('');
+    setTranscript('');
+    try {
+      const response = await fetch(`${API_BASE}/api/stc`, { method: 'POST' });
+      if (!response.ok) throw new Error('Failed to call voice command');
+      const data: StcResponse = await response.json();
+      setTranscript(data.transcript);
+      setStcMessage(data.message);
+      if (data.command) {
+        // Handle voice commands here
+        console.log('Voice command received:', data.command);
+      }
+    } catch (err) {
+      setStcMessage(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setStcLoading(false);
+    }
+  };
+
   const parseVerses = (ref: string): string[] => {
     if (!ref) return [];
     const parts = ref.split(' ');
