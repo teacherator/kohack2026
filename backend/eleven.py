@@ -4,37 +4,51 @@ import json
 import sys
 
 # ===== CONFIG =====
-API_KEY = "sk_66bf70b99e33b122703a58124821c88cfe07d705aa7ff760"
+API_KEY = "REPLACE_ME"
 VOICE_ID = "pNInz6obpgDQGcFmaJgB"
 MODEL_ID = "eleven_multilingual_v2"
 
 
-def get_daily_mishnah_url():
+def get_daily_mishnah_item():
     response = requests.get("https://www.sefaria.org/api/calendars", timeout=30)
     response.raise_for_status()
     data = response.json()
 
     for item in data.get("calendar_items", []):
         if item.get("category") == "Mishnah":
-            return item["url"]
+            return item
 
     raise RuntimeError("Could not find daily Mishnah in Sefaria calendar data.")
 
 
-def get_text_from_versions(versions, lang):
+def flatten_text_segments(text):
+    segments = []
+
+    def walk(value):
+        if isinstance(value, str):
+            cleaned = value.replace("\n", " ").strip()
+            if cleaned:
+                segments.append(cleaned)
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+    walk(text)
+    return segments
+
+
+def get_text_segments_from_versions(versions, lang):
     for version in versions:
         if version.get("language") == lang:
             text = version.get("text")
-            if isinstance(text, list) and text:
-                if isinstance(text[0], str):
-                    return text[0].replace("\n", " ").strip()
-            elif isinstance(text, str):
-                return text.replace("\n", " ").strip()
-    return None
+            if isinstance(text, (list, str)):
+                return flatten_text_segments(text)
+    return []
 
 
-def get_daily_mishnah_hebrew():
-    mishnah_url = get_daily_mishnah_url()
+def get_daily_mishnah_data():
+    mishnah_item = get_daily_mishnah_item()
+    mishnah_url = mishnah_item["url"]
 
     response = requests.get(
         f"https://www.sefaria.org/api/v3/texts/{mishnah_url}?return_format=text_only",
@@ -43,11 +57,22 @@ def get_daily_mishnah_hebrew():
     response.raise_for_status()
     data = response.json()
 
-    hebrew_text = get_text_from_versions(data.get("versions", []), "he")
-    if not hebrew_text:
+    hebrew_segments = get_text_segments_from_versions(data.get("versions", []), "he")
+    english_segments = get_text_segments_from_versions(data.get("versions", []), "en")
+
+    if not hebrew_segments:
         raise RuntimeError("Could not find Hebrew text in Sefaria response.")
 
-    return hebrew_text
+    return {
+        "displayed_mishnah_en": mishnah_item.get("displayValue", {}).get("en"),
+        "displayed_mishnah_he": mishnah_item.get("displayValue", {}).get("he"),
+        "ref": mishnah_item.get("ref"),
+        "url": mishnah_item.get("url"),
+        "hebrew_segments": hebrew_segments,
+        "english_segments": english_segments,
+        "hebrew_combined": " ".join(hebrew_segments),
+        "english_combined": " ".join(english_segments),
+    }
 
 
 def generate_tts_with_timestamps(text):
@@ -71,7 +96,6 @@ def generate_tts_with_timestamps(text):
     print()
 
     response.raise_for_status()
-
     result = response.json()
 
     if "audio_base64" not in result:
@@ -89,7 +113,7 @@ def generate_tts_with_timestamps(text):
     return result
 
 
-def save_outputs(result):
+def save_outputs(result, mishnah_data):
     audio_bytes = base64.b64decode(result["audio_base64"])
 
     with open("audio.mp3", "wb") as f:
@@ -98,22 +122,37 @@ def save_outputs(result):
     with open("alignment.json", "w", encoding="utf-8") as f:
         json.dump(result["alignment"], f, ensure_ascii=False, indent=2)
 
+    with open("mishnah_data.json", "w", encoding="utf-8") as f:
+        json.dump(mishnah_data, f, ensure_ascii=False, indent=2)
+
     print("Saved audio.mp3")
     print("Saved alignment.json")
+    print("Saved mishnah_data.json")
 
 
 def main():
-    if API_KEY == "YOUR_API_KEY" or VOICE_ID == "YOUR_VOICE_ID":
+    if API_KEY == "YOUR_API_KEY" or API_KEY == "REPLACE_ME" or VOICE_ID == "YOUR_VOICE_ID":
         raise RuntimeError("Replace YOUR_API_KEY and YOUR_VOICE_ID first.")
 
-    hebrew_text = get_daily_mishnah_hebrew()
+    mishnah_data = get_daily_mishnah_data()
 
-    print("Hebrew text:")
-    print(hebrew_text)
+    print("Displayed Mishnah:")
+    print(mishnah_data["displayed_mishnah_en"])
+    print(mishnah_data["displayed_mishnah_he"])
     print()
 
-    result = generate_tts_with_timestamps(hebrew_text)
-    save_outputs(result)
+    print("Hebrew segments:")
+    for i, seg in enumerate(mishnah_data["hebrew_segments"], start=1):
+        print(f"{i}. {seg}")
+    print()
+
+    print("English segments:")
+    for i, seg in enumerate(mishnah_data["english_segments"], start=1):
+        print(f"{i}. {seg}")
+    print()
+
+    result = generate_tts_with_timestamps(mishnah_data["hebrew_combined"])
+    save_outputs(result, mishnah_data)
 
 
 if __name__ == "__main__":
