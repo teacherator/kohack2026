@@ -5,6 +5,7 @@ import { useSettingsStore } from '../store/useSettingsStore';
 export default function MishnahYomiViewer() {
   const [hebrewText, setHebrewText] = useState<string>('');
   const [hebrewSegments, setHebrewSegments] = useState<string[]>([]);
+  const [ref, setRef] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>('');
 
@@ -20,6 +21,7 @@ export default function MishnahYomiViewer() {
         const data = await response.json();
         setHebrewText(data.hebrew_text);
         setHebrewSegments(data.hebrew_segments || []);
+        setRef(data.ref || '');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -29,6 +31,25 @@ export default function MishnahYomiViewer() {
 
     fetchHebrewText();
   }, []);
+
+  const parseVerses = (ref: string): string[] => {
+    if (!ref) return [];
+    const parts = ref.split(' ');
+    const last = parts[parts.length - 1];
+    const colonIndex = last.indexOf(':');
+    if (colonIndex === -1) return [];
+    const chapter = last.substring(0, colonIndex);
+    const versesPart = last.substring(colonIndex + 1);
+    const dashIndex = versesPart.indexOf('-');
+    if (dashIndex === -1) return [last];
+    const start = parseInt(versesPart.substring(0, dashIndex));
+    const end = parseInt(versesPart.substring(dashIndex + 1));
+    const verses: string[] = [];
+    for (let i = start; i <= end; i++) {
+      verses.push(`${chapter}:${i}`);
+    }
+    return verses;
+  };
 
   const textStyle = {
     fontSize: `${fontSize}%`,
@@ -42,21 +63,29 @@ export default function MishnahYomiViewer() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 flex flex-col items-center justify-start pt-16 px-4" style={containerStyle}>
+    <div className="min-h-screen flex flex-col items-center justify-start pt-16 px-4" style={containerStyle}>
       <h1 className="text-4xl font-bold mb-6" style={textStyle}>Mishnah Yomi Viewer</h1>
-      <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md" style={containerStyle}>
+      <div className="w-full max-w-2xl p-6 rounded-lg shadow-md" style={containerStyle}>
         {loading && <p style={textStyle}>Loading...</p>}
         {error && <p className="text-red-500" style={textStyle}>Error: {error}</p>}
         {hebrewText && (
           <div>
             <h2 className="text-2xl font-semibold mb-4" style={textStyle}>Daily Mishnah (Hebrew)</h2>
             {hebrewSegments.length > 0 ? (
-              <div className="text-right space-y-4" dir="rtl" style={textStyle}>
-                {hebrewSegments.map((segment, index) => (
-                  <p key={index} className="text-lg leading-relaxed">
-                    {segment}
-                  </p>
-                ))}
+              <div className="text-right space-y-4" dir="rtl">
+                {hebrewSegments.map((segment, index) => {
+                  const verses = parseVerses(ref);
+                  const tractate = ref.replace(/ \d+:\d+-\d+$/, '');
+                  const label = verses[index] ? `${tractate} ${verses[index]}` : `Segment ${index + 1}`;
+                  return (
+                    <div key={index} className="space-y-2">
+                      <h3 className="text-xl font-semibold" style={textStyle}>{label}</h3>
+                      <p className="text-lg leading-relaxed" style={textStyle}>
+                        {segment}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <p className="text-right text-lg leading-relaxed" dir="rtl" style={textStyle}>{hebrewText}</p>
