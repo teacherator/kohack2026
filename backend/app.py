@@ -103,6 +103,7 @@ def serve_audio(filename):
         return jsonify({"error": "Audio file not found"}), 404
     return send_file(audio_path, mimetype='audio/mpeg')
 
+
 @app.route('/api/tts', methods=['POST'])
 def generate_tts():
     """
