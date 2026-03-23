@@ -11,10 +11,14 @@ export default function MishnahYomiViewer() {
 
   const { fontSize, lineHeight, dyslexiaFont, contrast } = useSettingsStore();
 
+const API_BASE = import.meta.env.DEV 
+  ? 'http://localhost:5000' 
+  : 'https://https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi'
+
   useEffect(() => {
     const fetchHebrewText = async () => {
       try {
-        const response = await fetch('/api/hebrew-text');
+        const response = await fetch(`${API_BASE}/api/hebrew-text`);
         if (!response.ok) {
           throw new Error('Failed to fetch Hebrew text');
         }

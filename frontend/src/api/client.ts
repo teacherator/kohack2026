@@ -5,7 +5,7 @@ apiFetch(endpoint, options)
 */
 
 const API_BASE =
-  "https://fastapi-template-app-entxr.ondigitalocean.app";
+  "https://lionfish-app-5f4rk.ondigitalocean.app/mishnah-yomi";
 
 export async function apiFetch(
   endpoint: string,
