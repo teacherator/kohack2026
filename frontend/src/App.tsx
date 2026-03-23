@@ -1,11 +1,23 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useAuthStore } from './store/useAuthStore';
+import { useSettingsStore } from "./store/useSettingsStore";
 
 export default function App() {
-  // For demo — in real app, get this from auth context / state
-  const isLoggedIn = false; // ← change to true to test logged-in state
+  const isLoggedIn = useAuthStore(
+    (state) => state.isLoggedIn
+  );
+
+  const contrast = useSettingsStore(
+    (state) => state.contrast
+  );
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div
+      className="min-h-screen bg-white text-gray-900"
+      style={{
+        filter: `contrast(${contrast}%)`, //CSS contrast filter that applies to the entire site
+      }}
+    >
       <nav className="border-b p-4 flex items-center justify-between">
   {/* Left side - Navigation links */}
   <div className="flex gap-8 items-center">  {/* increased gap a bit for breathing room */}
@@ -22,7 +34,7 @@ export default function App() {
     </NavLink>
 
     {/* Dropdown - Learning Schedules */}
-    <div className="relative group">
+    <div className="relative group inline-block">
       <button
         type="button"
         className="flex items-center gap-1 text-blue-600 hover:underline font-medium focus:outline-none"
